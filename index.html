@@ -1,0 +1,519 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>reveal.js</title>
+
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/black.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+        <style>
+        pre code.rust {
+            font-size: 90%;
+            max-height: 500px;
+        }
+        pre code.rust-error {
+            font-size: 80%;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h1 style="display:inline-block; position:relative">Rust 
+                    	<img style="background:transparent; border:none; width: 100px; position:absolute; z-index:1;top:-32px; right: -50px; vertical-align:middle; transform: rotate(45deg)" src="images/rustacean.svg" />
+                    </h1>
+                    <div >
+                    	<img style="background:white;vertical-align:middle;" src="images/logo.png" />
+                	</div>
+                    
+                </section>
+
+                <section>
+                    <h2>Rust&nbsp;?</h2>
+                    <ul>
+                    	<li>Language bas niveau - concurrent direct de C ou de C++</li>
+                    	<li class="fragment">Développé par Mozilla (début en 2010, release en 2015)</li>                       
+                        <li class="fragment">Accent mis sur la securité (au niveau de la mémoire) et la vitesse (d'exécution)</li>
+                        <li class="fragment">Langage le plus aimé sur stackoverflow depuis 4 ans</li>
+                    </ul>
+                </section>
+
+                 <section>
+                    <h2>Qui utilise Rust&nbsp;?</h2>
+
+                    <ul>
+                        <li>Mozilla (Firefox)</li>
+                        <li>Microsoft (Azure IOT edge)</li>
+                        <li>npm, Dropbox, Atlassian, etc. </li>
+                    </ul>    
+                        
+                </section>    
+
+                <section>
+                	<h2>À la découverte de Rust&nbsp;!</h2>
+                </section>	
+
+                <section>
+                	<h2>Démarrer avec Rust</h2>
+                	<ul>
+                		<li class="fragment">Plein de <a href="https://www.rust-lang.org/learn">doc</a>&nbsp;!</li>
+                		<li class="fragment">Installation facile <strong class="fragment"> - sans brew</strong> </li>                		
+                		<li class="fragment">Hello world en 5 minutes&nbsp;!</li>
+                	</ul>	
+                	<pre><code data-trim class="fragment rust">
+fn main() {
+    println!("Hello, world!");
+}
+                	</code></pre>	
+                </section>	
+
+                <section>
+                	<h2>Cargo</h2>
+                	<ul>
+                		<li>Gestion des dépendances</li>
+                		<li>run</li>
+                		<li>test</li>
+                		<li>fmt</li>
+                		<li>build</li>
+                		<li>clippy</li>
+                	</ul>	
+                </section>	
+
+                <section>
+                	<h2>Programmation fonctionnelle ?</h2>
+                	<img style="background:white; width:400px;" src="images/monad.png" />
+                </section>	
+
+                <section>
+                	<h2>0 cost abstraction</h2>
+                	<pre><code data-trim class="rust">
+fn sum_of_double(vec: Vec&lt;i32>) -> i32 {
+    let mut result = 0;
+    for  i in vec  {
+        result += i * 2;
+    }
+    result
+}
+</code></pre>                	
+<pre class="fragment"><code data-trim class="rust">
+fn sum_of_double(vec: Vec&lt;i32>) -> i32 {
+    vec.iter().map(|i| i * 2).sum()
+}
+</code></pre>   
+                </section>	
+
+                <section>
+                	<h2>Programmation Orienté Objet</h2>
+                	<img style="background:white; width:300px;" src="images/poo.png" />
+                </section>	
+
+                <section>
+                	<h2>Instances et Méthodes</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug)]
+struct CoffeeMachine {
+    water_tank: u32,
+    is_on: bool
+}
+impl CoffeeMachine {    
+    pub fn new() -> CoffeeMachine {
+        CoffeeMachine { water_tank: 0, is_on: false }
+    }
+    pub fn fill(self, volume: u32) -> CoffeeMachine {
+        CoffeeMachine { water_tank: volume, is_on: self.is_on }
+    }
+}	
+fn display_machine() {
+    let coffee_machine = CoffeeMachine::new();
+    let filled_machine = coffee_machine.fill(30);
+    println!("{:?}", filled_machine)
+}
+</code></pre>	                	
+                </section>	
+
+                <section>
+                	<h2>PAS D'HÉRITAGE !</h2>
+                	<img src="images/party.gif" />
+                </section>	
+
+        
+                <section>
+                	<h2>0 cost abstraction</h2>
+                	<h3>Value class</h3>
+                	<img src="images/dotty.svg" />
+<pre><code data-trim class="rust">
+pub struct Temperature(f32);
+
+let t: Temperature = Temperature(30.5);
+</code></pre>                	
+
+                </section>
+
+                 <section>
+                	<h2>Algrbraic Data Type</h2>
+                	<img src="images/dotty.svg" />
+<pre><code data-trim class="rust">
+enum Filter {
+    HasValue,
+    Eq(f64),
+    Between { value1: f64, value2: f64, another_field: u8}
+}
+
+fn print_filter(f: Filter) -> String {
+    match f {
+      Filter::HasValue => "has:value".to_owned(),
+      Filter::Eq(value) => format!("eq:{} }", value),
+      Filter::Between { value1, value2, .. } => {
+        format!("between:{}, and?: {}", value1, value2)
+      },
+    }
+}	
+</code></pre>                	
+                </section>	
+
+                <section>
+                	<h2>String's Hell</h2>
+	                <ul>
+	                	<li>&str</li>	
+	                	<li>&'static str</li>	
+	                	<li>String</li>
+	                	<li>CString</li>
+	                </ul>	
+                </section>	
+
+                <section>
+                	<h2>Traits</h2>
+                	<img src="images/dotty.svg" />
+<pre><code data-trim class="rust">
+trait Triple {
+    fn triple(self) -> Self;
+}
+
+impl Triple for u8 {
+    fn triple(self) -> Self {
+        self * 3
+    }
+}
+
+let i: u8 = 3;
+i.triple();   
+</code></pre>                	
+                </section>	
+
+                <section>
+                	<h2>Traits</h2>
+                	<img src="images/dotty.svg" />
+<pre><code data-trim class="rust">
+struct Volume(f32);
+
+impl std::ops::Add for Volume {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        let Volume(i) = self;
+        let Volume(j) = other;
+        Volume(i + j)
+    }
+}
+
+let v: Volume = Volume(2.) + Volume(3.);
+</code></pre>                	
+                </section>	
+
+                 <section>
+                	<h2>Traits</h2>
+                	<img src="images/dotty.svg" />
+<pre><code data-trim class="rust">
+struct Length(f32);
+struct Surface(f32);
+
+impl std::ops::Mul&lt;Length> for Surface {
+    type Output = Volume;
+
+    fn mul(self, rhs: Length) -> Volume {
+        Volume(rhs.0 * self.0)
+    }
+}
+
+
+let v:Volume = Surface(2.3) * Length(3.);
+</code></pre>                	
+                </section>	
+
+                <section>
+                	<h2>Gestion des erreurs</h2>
+                	<ul>
+                		<li>Gestion explicite</li>
+                		<li class="fragment">Crash du programme</li>
+                		
+                	</ul>
+                </section>	
+
+                <section>
+                	<h2>Panic</h2>
+<pre><code data-trim class="rust">
+fn divide_strs(str1: &str, str2: &str) -> f64  {
+    let i1: Result&lt;f64, _> = str1.parse::&lt;f64>();
+    let i2: Result&lt;f64, _> = str2.parse::&lt;f64>();
+    if i2 == Ok(0.0) {
+        panic!("Cannot divide by 0")
+    }
+
+    i1.unwrap() / i2.unwrap()
+}	
+</code></pre>                	
+                </section>
+
+                 <section>
+                	<h2>Result</h2>
+<pre><code data-trim class="rust">
+fn divide_strs(str1: &str, str2: &str) -> Result&lt;f64, String> {
+   let i1: f64 = str1.parse::&lt;f64>().map_err(|e| format!("{}", e))?;
+   let i2: f64 = str2.parse::&lt;f64>().map_err(|e| format!("{}", e))?;
+    
+   if i2 == 0.0 {
+       Err("Cannot divide by 0".to_owned())
+   } else {
+       Ok(i1 / i2)
+   }
+}
+</code></pre>                	
+                </section>
+
+                <section>
+                	<h2>Tests</h2>
+                	<p>Dans le fichier d'implémentation<p>
+<pre><code data-trim class="rust">
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn surface_times_length_should_return_volume() {
+        let v:Volume = Surface(2.) * Length(3.);
+        assert_eq!(v, Volume(6.))
+    }
+}
+
+</code></pre>                	
+                </section>
+
+
+               	<section>
+               		<h2>Ou est le bas niveau&nbsp;?</h2>
+               		<img src="images/basement.webp" />
+               		
+               	</section> 	
+
+
+               	<section>
+               		<h2>ownership</h2>
+<pre><code data-trim class="rust">
+impl CoffeeMachine {
+    pub fn new() -> CoffeeMachine {
+        CoffeeMachine { water_tank: 0, is_on: false }
+    }
+    pub fn fill(mut self, volume: u32) {
+        self.water_tank = volume
+    }
+}
+
+let coffee_machine = CoffeeMachine::new();
+coffee_machine.fill(30);
+println!("{:?}", coffee_machine)
+</code></pre>
+<pre class="fragment"><code data-trim class="rust rust-error">
+error[E0382]: borrow of moved value: `coffee_machine`
+
+ let coffee_machine = CoffeeMachine::new();
+     -------------- move occurs because `coffee_machine` has type `CoffeeMachine`, which does not implement the `Copy` trait
+ coffee_machine.fill(30);
+ -------------- value moved here
+ println!("{:?}", coffee_machine)
+                  ^^^^^^^^^^^^^^ value borrowed here after move
+</code></pre>	
+               	</section>	
+
+               	<section>
+               		<h2>Ownership</h2>
+<pre><code data-trim class="rust">
+impl CoffeeMachine {
+    pub fn new() -> CoffeeMachine {
+        CoffeeMachine { water_tank: 0, is_on: false }
+    }
+    pub fn fill(&mut self, volume: u32) {
+        self.water_tank += volume
+    }
+}
+
+fn main() {
+    let mut coffee_machine = CoffeeMachine::new();
+    coffee_machine.fill(30);
+    println!("{:?}", coffee_machine)
+}
+</code></pre>
+               	</section>	
+
+               	<section>
+               		<h2>Memory management - move?</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug, Clone)]
+struct User { username: String }
+#[derive(Debug)]
+struct CoffeeMachine {
+    water_tank: u32,
+    is_on: bool,
+    owner: User
+}
+impl CoffeeMachine {
+    pub fn new(owner: User) -> CoffeeMachine {
+        CoffeeMachine { owner, water_tank: 0, is_on: false }
+    }
+}
+
+let user = User { username: "Georges".to_owned() };
+let coffee_machine = CoffeeMachine::new(user);
+let coffee_machine2 = CoffeeMachine::new(user.clone());
+</code></pre>               		
+               	</section>	
+
+               	<section>
+               		<h2>Memory management - borrowing?</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug)]
+struct CoffeeMachine {
+    water_tank: u32,
+    is_on: bool,
+    owner: User
+}
+
+impl CoffeeMachine {
+  pub fn new(base_owner: &User) -> CoffeeMachine {
+    let owner = base_owner.clone();
+    CoffeeMachine { owner, water_tank: 0, is_on: false }
+  }
+}
+
+let user = User { username: "Georges".to_owned() };
+let coffee_machine = CoffeeMachine::new(&user) ;
+let coffee_machine2 = CoffeeMachine::new(&user) ;
+</code></pre>               		
+               	</section>	
+
+               	<section>
+               		<h2>Memory management - everything is reference</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug)]
+struct CoffeeMachine&lt;'a> {
+    water_tank: u32,
+    is_on: bool,
+    owner: &'a User
+}
+
+impl &lt;'a> CoffeeMachine&lt;'a> {
+    pub fn new(owner: &'a User) -> CoffeeMachine&lt;'a> {
+        CoffeeMachine { owner, water_tank: 0, is_on: false }
+    }
+}
+
+let user = User { username: "Georges".to_owned() };
+let coffee_machine = CoffeeMachine::new(&user) ;
+let coffee_machine2 = CoffeeMachine::new(&user) ;
+
+println!("{:?}", coffee_machine)
+
+</code></pre>               		
+               	</section>	
+
+				<section>
+                	<h2>Interroperabilité avec C</h2>
+                	<pre><code data-trim class="rust">
+#[link(name = "readline")]
+extern {
+    static mut rl_prompt: *const libc::c_char;
+}
+
+fn main() {
+    let prompt = CString::new("[my-awesome-shell] $").unwrap();
+    unsafe {
+        rl_prompt = prompt.as_ptr();
+
+        println!("{:?}", rl_prompt);
+
+        rl_prompt = ptr::null();
+    }
+}
+                	</code></pre>	
+                </section>	
+
+               	 <section>
+                	<h2>Webassembly</h2>
+                	<ul>
+                		<li>Rust dans le browser</li>
+                		<li>Peu performant sur les cas simples</li>
+                		<li>Complexe</li>
+                	</ul>	
+                </section>	
+
+                <section>
+                	<h2>Rust vS Go ?</h2>
+                	<ul>
+                		<li>Langage sans GC vs langage avec GC</li>
+                		<li>Language complexe vs language simple</li>
+                		<li>multi-paradigme vs "il n'y a qu'une façon de faire les choses"</li>
+                	</ul>	
+                </section>	
+
+				<section>
+                    <h2>Conclusion</h2>
+                    <ul>
+                    	
+                    	<li>Pleins de concepts intéressants</li>
+                    	<li class="fragment">L'apprentissage est difficile</li>
+                    	<li class="fragment">les libs sont toutes pre 1.x</li>                    	
+                    	<li class="fragment">Adapté pour programme système avec contraintes</li>
+                    </ul>	
+                    
+                </section>    
+
+                <!-- -->
+     
+            </div>
+        </div>
+
+        <script src="js/reveal.js"></script>
+
+        <script>
+            // More info about config & dependencies:
+            // - https://github.com/hakimel/reveal.js#configuration
+            // - https://github.com/hakimel/reveal.js#dependencies
+            Reveal.initialize({
+                hash: true,
+                history: true,
+                dependencies: [
+                    { src: 'plugin/markdown/marked.js' },
+                    { src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/highlight/highlight.js', async: true }
+                ]
+            });
+        </script>
+    </body>
+</html>
