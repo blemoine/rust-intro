@@ -30,6 +30,15 @@
         pre code.rust-error {
             font-size: 80%;
         }
+
+        section img.dotty-img {
+        	border: none;
+        	background: transparent;
+        	position: absolute;
+        	top: 15px;
+        	right: 15px;
+        	width: 30px;
+        }
         </style>
     </head>
     <body>
@@ -87,13 +96,17 @@ fn main() {
                 <section>
                 	<h2>Cargo</h2>
                 	<ul>
-                		<li>Gestion des dépendances</li>
-                		<li>run</li>
-                		<li>test</li>
-                		<li>fmt</li>
-                		<li>build</li>
-                		<li>clippy</li>
+                		<li class="fragment">Gestion des dépendances</li>
+                		<li class="fragment">run</li>
+                		<li class="fragment">test</li>
+                		<li class="fragment">fmt</li>
+                		<li class="fragment">build</li>
+                		<li class="fragment"><span style="vertical-align: middle;">clippy</span> <img src="images/clippy.jpg" style="vertical-align: middle;width:50px" /></li>
                 	</ul>	
+                </section>	
+
+                <section>
+                	<h2>Que peut on faire avec Rust&nbsp;?</h2>
                 </section>	
 
                 <section>
@@ -157,7 +170,7 @@ fn display_machine() {
                 <section>
                 	<h2>0 cost abstraction</h2>
                 	<h3>Value class</h3>
-                	<img src="images/dotty.svg" />
+                	<img class="dotty-img" src="images/dotty.svg" />
 <pre><code data-trim class="rust">
 pub struct Temperature(f32);
 
@@ -167,21 +180,22 @@ let t: Temperature = Temperature(30.5);
                 </section>
 
                  <section>
-                	<h2>Algrbraic Data Type</h2>
-                	<img src="images/dotty.svg" />
+                	<h2>Algebraic Data Type</h2>
+                	<img class="dotty-img" src="images/dotty.svg" />
 <pre><code data-trim class="rust">
 enum Filter {
     HasValue,
     Eq(f64),
     Between { value1: f64, value2: f64, another_field: u8}
 }
-
+</code></pre>                	
+<pre class="fragment"><code data-trim class="rust">
 fn print_filter(f: Filter) -> String {
     match f {
       Filter::HasValue => "has:value".to_owned(),
-      Filter::Eq(value) => format!("eq:{} }", value),
+      Filter::Eq(value) => format!("eq:{}", value),
       Filter::Between { value1, value2, .. } => {
-        format!("between:{}, and?: {}", value1, value2)
+        format!("between:{}, and: {}", value1, value2)
       },
     }
 }	
@@ -200,12 +214,13 @@ fn print_filter(f: Filter) -> String {
 
                 <section>
                 	<h2>Traits</h2>
-                	<img src="images/dotty.svg" />
+                	<img class="dotty-img" src="images/dotty.svg" />
 <pre><code data-trim class="rust">
 trait Triple {
     fn triple(self) -> Self;
 }
-
+</code></pre>
+<pre class="fragment"><code data-trim class="rust">
 impl Triple for u8 {
     fn triple(self) -> Self {
         self * 3
@@ -219,7 +234,7 @@ i.triple();
 
                 <section>
                 	<h2>Traits</h2>
-                	<img src="images/dotty.svg" />
+                	<img class="dotty-img" src="images/dotty.svg" />
 <pre><code data-trim class="rust">
 struct Volume(f32);
 
@@ -239,7 +254,7 @@ let v: Volume = Volume(2.) + Volume(3.);
 
                  <section>
                 	<h2>Traits</h2>
-                	<img src="images/dotty.svg" />
+                	<img class="dotty-img" src="images/dotty.svg" />
 <pre><code data-trim class="rust">
 struct Length(f32);
 struct Surface(f32);
@@ -260,7 +275,7 @@ let v:Volume = Surface(2.3) * Length(3.);
                 <section>
                 	<h2>Gestion des erreurs</h2>
                 	<ul>
-                		<li>Gestion explicite</li>
+                		<li class="fragment">Gestion explicite</li>
                 		<li class="fragment">Crash du programme</li>
                 		
                 	</ul>
@@ -331,7 +346,7 @@ impl CoffeeMachine {
         CoffeeMachine { water_tank: 0, is_on: false }
     }
     pub fn fill(mut self, volume: u32) {
-        self.water_tank = volume
+        self.water_tank += volume
     }
 }
 
@@ -371,6 +386,29 @@ fn main() {
 </code></pre>
                	</section>	
 
+               		<section>
+               		<h2>Memory management - move?</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug)]
+struct User { username: String }
+#[derive(Debug)]
+struct CoffeeMachine {
+    water_tank: u32,
+    is_on: bool,
+    owner: User
+}
+impl CoffeeMachine {
+    pub fn new(owner: User) -> CoffeeMachine {
+        CoffeeMachine { owner, water_tank: 0, is_on: false }
+    }
+}
+
+let user = User { username: "Georges".to_owned() };
+let coffee_machine = CoffeeMachine::new(user);
+let coffee_machine2 = CoffeeMachine::new(user);
+</code></pre>               		
+               	</section>
+
                	<section>
                		<h2>Memory management - move?</h2>
 <pre><code data-trim class="rust">
@@ -389,8 +427,8 @@ impl CoffeeMachine {
 }
 
 let user = User { username: "Georges".to_owned() };
-let coffee_machine = CoffeeMachine::new(user);
-let coffee_machine2 = CoffeeMachine::new(user.clone());
+let coffee_machine = CoffeeMachine::new(user.clone());
+let coffee_machine2 = CoffeeMachine::new(user);
 </code></pre>               		
                	</section>	
 
@@ -417,6 +455,25 @@ let coffee_machine2 = CoffeeMachine::new(&user) ;
 </code></pre>               		
                	</section>	
 
+
+               	<section>
+               		<h2>Memory management - everything is reference</h2>
+<pre><code data-trim class="rust">
+#[derive(Debug)]
+struct CoffeeMachine {
+    water_tank: u32,
+    is_on: bool,
+    owner: &User
+}
+</code></pre>         
+<pre class="fragment"><code data-trim class="rust rust-error">      		
+error[E0106]: missing lifetime specifier
+  |
+8 |     owner: &User
+  |            ^ expected lifetime parameter	
+</code></pre>         
+               	</section>	
+
                	<section>
                		<h2>Memory management - everything is reference</h2>
 <pre><code data-trim class="rust">
@@ -440,6 +497,10 @@ let coffee_machine2 = CoffeeMachine::new(&user) ;
 println!("{:?}", coffee_machine)
 
 </code></pre>               		
+               	</section>	
+
+               	<section>
+               		<h2>Rust et le reste du monde&nbsp;?</h2>
                	</section>	
 
 				<section>
@@ -475,9 +536,9 @@ fn main() {
                 <section>
                 	<h2>Rust vS Go ?</h2>
                 	<ul>
-                		<li>Langage sans GC vs langage avec GC</li>
-                		<li>Language complexe vs language simple</li>
-                		<li>multi-paradigme vs "il n'y a qu'une façon de faire les choses"</li>
+                		<li class="fragment">Langage sans GC vs langage avec GC</li>
+                		<li class="fragment">Language complexe vs language simple</li>
+                		<li class="fragment">multi-paradigme vs "il n'y a qu'une façon de faire les choses"</li>
                 	</ul>	
                 </section>	
 
@@ -485,7 +546,7 @@ fn main() {
                     <h2>Conclusion</h2>
                     <ul>
                     	
-                    	<li>Pleins de concepts intéressants</li>
+                    	<li class="fragment">Pleins de concepts intéressants</li>
                     	<li class="fragment">L'apprentissage est difficile</li>
                     	<li class="fragment">les libs sont toutes pre 1.x</li>                    	
                     	<li class="fragment">Adapté pour programme système avec contraintes</li>
